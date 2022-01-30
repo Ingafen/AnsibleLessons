@@ -15,6 +15,7 @@
     instance_type: t2.micro
     ami_centos8: ami-0e0669c0b39d3a79f
     key_name: ansible
+    home_net_ip: 77.222.118.226/32
     private_ip_master: 172.16.2.10
     private_ip_nodes:
       - 172.16.2.21
@@ -50,6 +51,15 @@
         vpc_id: "{{ vpc_id }}"
         name: "{{ security_group_name }}"
         description: "Security group for VPC"
+        rules:
+          - proto: tcp
+            to_port: 80
+            cidr_ip: "{{ home_net_ip }}"
+            rule_desc: "Allow test Apache2 from home ip"
+          - proto: tcp
+            to_port: 22
+            cidr_ip: "{{ home_net_ip }}"
+            rule_desc: "Allow SSH from home ip"
       register: sg
     - name: Create EC2 master node
       ec2: 
@@ -61,6 +71,9 @@
         region: "{{ region }}"
         vpc_subnet_id: "{{ ps.subnet.id }}"
         private_ip: "{{ private_ip_master }}"
+        intsance_tags:
+          name: Ansible master
+          target: ansible
     - name: Create EC2 slave nodes
       ec2: 
         state: "{{ state }}"
@@ -70,5 +83,8 @@
         key_name: "{{ key_name }}"
         region: "{{ region }}"
         vpc_subnet_id: "{{ ps.subnet.id }}"
-        private_ip: "{{ item }}"
+        instance_tags:
+          name: "{{ item }}"
+          target: ansible
+        private_ip: "{{ item }}"        
       loop: "{{ private_ip_nodes }}"
