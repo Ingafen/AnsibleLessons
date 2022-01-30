@@ -15,12 +15,12 @@
     instance_type: t2.micro
     ami_centos8: ami-0e0669c0b39d3a79f
     key_name: ansible
+    master_key: ubuntu
     home_net_ip: 77.222.118.226/32
     private_ip_master: 172.16.2.10
     private_ip_nodes:
       - 172.16.2.21
       - 172.16.2.22
-      - 172.16.2.23
 
   tasks:
     - name: Create VPC 
@@ -35,14 +35,14 @@
         vpc_id: "{{ v.vpc.id }}"
     - name: Debug vpc
       debug:       
-        var: vpc_id
-        verbosity: 4
+        var: vpc_id       
     - name: Create public subnet
       ec2_vpc_subnet:
         cidr: "{{ cidr_block_public }}"
         region: "{{ region }}"
         vpc_id: "{{ vpc_id }}"
         state: "{{ state }}"
+        map_public: yes
       register: ps
     - name: Create security group for VPC
       ec2_group:
@@ -54,25 +54,47 @@
         rules:
           - proto: tcp
             to_port: 80
+            from_port: 80
             cidr_ip: "{{ home_net_ip }}"
             rule_desc: "Allow test Apache2 from home ip"
           - proto: tcp
             to_port: 22
+            from_port: 22
             cidr_ip: "{{ home_net_ip }}"
             rule_desc: "Allow SSH from home ip"
+          - proto: all
+            from_port: -1
+            to_port: -1
+            group_name: "{{ security_group_name }}"
       register: sg
+    - name: Create Internet Gateway
+      ec2_vpc_igw:
+        vpc_id: "{{ vpc_id }}"
+        region: "{{ region }}"  
+        tags:
+            Name: "IGW for ansible VPC"
+      register: igw
+    - name: Create Route table
+      ec2_vpc_route_table:
+        vpc_id: "{{ vpc_id }}"
+        region: "{{ region }}"
+        subnets: 
+          - "{{ ps.subnet.id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw.gateway_id }}"
     - name: Create EC2 master node
       ec2: 
         state: "{{ state }}"
         group_id: "{{ sg.group_id }}"
         image: "{{ ami_centos8 }}"
         instance_type: "{{ instance_type }}"
-        key_name: "{{ key_name }}"
+        key_name: "{{ master_key }}"
         region: "{{ region }}"
         vpc_subnet_id: "{{ ps.subnet.id }}"
         private_ip: "{{ private_ip_master }}"
-        intsance_tags:
-          name: Ansible master
+        instance_tags:
+          Name: Ansible master
           target: ansible
     - name: Create EC2 slave nodes
       ec2: 
@@ -84,7 +106,7 @@
         region: "{{ region }}"
         vpc_subnet_id: "{{ ps.subnet.id }}"
         instance_tags:
-          name: "{{ item }}"
+          Name: "{{ item }}"
           target: ansible
         private_ip: "{{ item }}"        
       loop: "{{ private_ip_nodes }}"
