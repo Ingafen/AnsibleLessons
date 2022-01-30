@@ -1,0 +1,23 @@
+---
+- name: Playbook1 - install, config and run
+  hosts: nodes
+  
+  tasks:
+    - name: install Apache2
+      yum:
+        state: latest
+        name: httpd
+    - name: enable Apache2 service and check enabled
+      service:
+        name: httpd
+        state: present
+    - name: Create index page with custom text
+      copy:
+        dest: /var/www/html/index.html 
+        content: "Welcome to my web server"
+    - name: Open port 80
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled   
+    
