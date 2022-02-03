@@ -1,0 +1,21 @@
+---
+- name: Playbook2 - uninstall, delete and close
+  hosts: nodes
+  
+  tasks:
+  - name: Uninstall Apache2
+    yum:
+      state: removed
+      name: httpd
+    become: yes
+  - name: Delete file from www folder
+    remove:
+      path: /var/www/html/index.html
+    become: yes
+  - name: Close port 80
+    firewalld:
+      service: http
+      permanent: yes
+      state: disabled
+    become: yes
+    
