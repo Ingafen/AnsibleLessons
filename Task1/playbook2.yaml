@@ -9,8 +9,9 @@
       name: httpd
     become: yes
   - name: Delete file from www folder
-    remove:
+    file:
       path: /var/www/html/index.html
+      state: absent
     become: yes
   - name: Close port 80
     firewalld:
