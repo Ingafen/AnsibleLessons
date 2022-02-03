@@ -7,17 +7,26 @@
       yum:
         state: latest
         name: httpd
+      become: yes
     - name: enable Apache2 service and check enabled
       service:
         name: httpd
-        state: present
+        state: started
+      become: yes
     - name: Create index page with custom text
       copy:
         dest: /var/www/html/index.html 
         content: "Welcome to my web server"
+      become: yes
+    - name: install firewalld packet to open port on firewall
+      yum:
+        state: latest
+        name: firewalld
+      become: yes
     - name: Open port 80
       firewalld:
         service: http
         permanent: yes
-        state: enabled   
+        state: enabled 
+      become: yes   
     
