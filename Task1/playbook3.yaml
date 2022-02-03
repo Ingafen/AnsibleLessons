@@ -20,6 +20,6 @@
       line: '\1 biosdevname=0\2'
     become: yes
   - name: Configure GRUB
-    raw: grub2-mkconfig -o /boot/grub2/grub.cfg
+    command: grub2-mkconfig -o /boot/grub2/grub.cfg
     become: yes
     
