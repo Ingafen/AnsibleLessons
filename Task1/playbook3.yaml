@@ -8,8 +8,8 @@
       state: present
       dest: /etc/default/grub
       backrefs: yes
-      regexp: '^(GRUB_CMDLINE_LINUX=(?!.* net.iframes)\"[^\"]+)(\".*)'
-      line: '\1 net.iframes=0\2'
+      regexp: '^(GRUB_CMDLINE_LINUX=(?!.* net.ifnames)\"[^\"]+)(\".*)'
+      line: '\1 net.ifnames=0\2'
     become: yes
   - name: Insert biosdevname=0 в /etc/default/grub
     lineinfile:
