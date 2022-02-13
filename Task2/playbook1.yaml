@@ -1,0 +1,19 @@
+---
+- name: Task 2 - create users 
+  hosts: nodes
+  vars_files: 
+    - vars/users.yaml
+ 
+  tasks:
+    - name: print user name
+      debug:
+        msg: "Next step will create {{ item.key }} email is {{ item.key }}@example.com homedir is /home/{{ item.key }} pass is {{ item.value.pass }} "
+      with_dict: "{{ users }}"    
+    - name: create users  
+      user:
+        name: "{{ item.key }}"
+        comment: "{{ item.key }}@example.com"
+        home: "/home/{{ item.key }}"
+        password: "{{ item.value.pass }}"
+      with_dict: "{{ users }}"
+      become: yes
