@@ -1,22 +1,19 @@
 ---
 - name: Task 2 - create users 
   hosts: nodes
-  
-  vars:
-    users: 
-      alice: 
-        name: alice1
-        pass: verybestpassword
-      bob:
-        name: bob1
-        pass: bobpass
-      carol:
-        name: carol1
-        pass: carolpass
-  
+  vars_files: 
+    - vars/users.yaml
+ 
   tasks:
-    - name: print user names
+    - name: print user name
       debug:
-        msg: "Create account for {{ item.key }} username is {{ item.value.name }} email is {{ item.value.name }}.example.com homedir is /home/{{ item.value.name }} pass is {{ item.value.pass }} "
-      loop: "{{ lookup('dict', users) }}"
-      
+        msg: "Next step will create {{ item.key }} email is {{ item.key }}@example.com homedir is /home/{{ item.key }} pass is {{ item.value.pass }} "
+      with_dict: "{{ users }}"    
+    - name: create users  
+      user:
+        name: "{{ item.key }}"
+        comment: "{{ item.key }}@example.com"
+        home: "/home/{{ item.key }}"
+        password: "{{ item.value.pass }}"
+      with_dict: "{{ users }}"
+      become: yes
