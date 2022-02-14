@@ -1,2 +1,5 @@
 ---
-# handlers file for Apache2Challenges
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted
