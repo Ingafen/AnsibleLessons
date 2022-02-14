@@ -1,0 +1,6 @@
+---
+- name: Task 3 - play roles
+  hosts: nodes
+  become: true
+  roles:
+    - Apache2Challenges
