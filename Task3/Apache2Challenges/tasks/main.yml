@@ -8,7 +8,7 @@
 - name: enable Apache2 service and check enabled
   service:
     name: httpd
-    state: started
+    state: started    
   become: yes
 
 - name: Create index page with custom text
@@ -17,12 +17,14 @@
     src: files/index.html
   become: yes
   notify: 
+    - restart httpd
 
 - name: install firewalld packet to open port on firewall
   yum:
     state: latest
-    name: firewalld
+    name: firewalld    
   become: yes
+  
 - name: Open port 80
   firewalld:
     service: http
