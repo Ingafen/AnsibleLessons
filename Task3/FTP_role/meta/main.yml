@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Victor Vedeneev
+  description: Install vsftpd and configure anonimus access and upload
+  company: your company (optional)
+  license: SD-3-Clause
+
+  min_ansible_version: 2.9
+
+  platforms:
+   - name: Fedora
+     versions:
+     - all
+  
+  galaxy_tags: []
+  
+dependencies: []
+  

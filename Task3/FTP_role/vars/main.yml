@@ -1,0 +1,8 @@
+---
+# vars file for FTP_role
+pub_dir: "/var/ftp/pub"
+pub_dir_upload: "/var/ftp/pub/upload"
+
+vsftpd_ftpd_banner: Hello to Ingafen FTP
+pasv_min_port: 40000
+pasv_max_port: 50000

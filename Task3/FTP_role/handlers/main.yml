@@ -1,0 +1,19 @@
+---
+- name: start vsftpd
+  service:
+    name: vsftpd
+    state: started
+  become: yes
+    
+- name: restart vsftpd
+  service:
+    name: vsftpd
+    state: restarted
+  become: yes
+
+- name: reload firewall
+  service:
+    name: firewalld
+    state: reloaded
+  become: yes
+        

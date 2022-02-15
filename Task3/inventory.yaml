@@ -1,0 +1,6 @@
+all:
+  children:
+    nodes:
+      hosts:
+        172.16.2.21:
+        172.16.2.22:

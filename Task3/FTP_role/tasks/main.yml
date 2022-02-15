@@ -1,0 +1,51 @@
+---
+# tasks file for FTP_role
+- name: Install vsftpd
+  yum:
+    state: latest
+    name: vsftpd
+  become: true
+  notify: 
+    - start vsftpd
+  
+- name: create ftp directories
+  file:
+    state: directory
+    path: "{{ item }}"
+  loop:
+    - "{{ pub_dir }}"
+    - "{{ pub_dir_upload }}"
+      
+- name: install firewalld packet to open port on firewall
+  yum:
+    state: latest
+    name: firewalld
+  become: yes
+
+- name: Open port 
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+  become: yes
+  loop:
+    - "20-21/tcp"
+    - " {{pasv_min_port}}-{{pasv_max_port}}/tcp " 
+  notify:
+    - reload firewall
+
+- name: Create config file from template
+  template:
+    src: vsftpd.conf.j2
+    dest: /etc/vsftpd/vsftpd.conf
+    mode: 644
+    backup: yes
+  notify:
+    - restart vsftpd
+
+- name: Configure SElinux to allow anonimus ftp
+  seboolean:
+    name: ftpd_anon_write
+    state: yes
+    persistent: yes
+  become: true
