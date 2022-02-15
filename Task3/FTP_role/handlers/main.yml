@@ -10,3 +10,10 @@
     name: vsftpd
     state: restarted
   become: yes
+
+- name: reload firewall
+  service:
+    name: firewalld
+    state: reloaded
+  become: yes
+        
