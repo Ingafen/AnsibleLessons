@@ -1,0 +1,17 @@
+anonymous_enable=YES
+local_enable=YES
+write_enable=YES
+local_umask=022
+anon_upload_enable=YES
+anon_root = {{ pub_dir }}
+no_anon_password = YES
+pasv_min_port = {{ pasv_min_port }}
+pasv_max_port = {{ pasv_max_port }}
+xferlog_enable=YES
+connect_from_port_20=YES
+xferlog_std_format=YES
+ftpd_banner= {{ vsftpd_ftpd_banner }}
+listen=YES
+listen_ipv6=NO
+pam_service_name=vsftpd
+userlist_enable=YES
