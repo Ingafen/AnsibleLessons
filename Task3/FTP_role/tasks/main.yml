@@ -11,10 +11,11 @@
 - name: create ftp directories
   file:
     state: directory
-    path: "{{ item }}"
-  loop:
-    - "{{ pub_dir }}"
-    - "{{ pub_dir_upload }}"
+    path: "{{ item.path }}"
+    mode: "{{ item.mode }}"
+  with_items:        
+    - { path: "{{ pub_dir }}", mode: "0755" }
+    - { path: "{{ pub_dir_upload }}", mode: "0777"}
       
 - name: install firewalld packet to open port on firewall
   yum:
@@ -45,7 +46,21 @@
 
 - name: Configure SElinux to allow anonimus ftp
   seboolean:
-    name: ftpd_anon_write
+    name: "{{item}}"
     state: yes
     persistent: yes
+  with_items:
+    - ftpd_anon_write
+    - allow_ftpd_anon_write
+  become: true
+
+- name: SELinux add config
+  community.general.sefcontext:
+    target: "{{ pub_dir_upload }}"
+    setype: public_content_rw_t 
+    state: present
+  become: true
+
+- name: Change SE context by comand
+  command: chcon -t public_content_rw_t "{{ pub_dir_upload }}"
   become: true
