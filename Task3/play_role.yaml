@@ -1,5 +1,0 @@
----
-- name: Task 3 - play roles
-  become: yes
-  roles:
-    - Apache2Challenges
