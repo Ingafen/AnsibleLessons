@@ -1,6 +1,5 @@
 ---
 - name: Playbook1 - install, config and run
-  hosts: nodes
   
   tasks:
     - name: install Apache2
